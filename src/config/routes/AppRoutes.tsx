@@ -1,19 +1,23 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Home } from "../../pages/Home";
-import { NotFound } from "../../pages/NotFound"; 
+import { Dashboard } from "../../pages/Dashboard";
+import { DefaultLayout } from "../../config/global/layout/DefaultLayout";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Home />,
+    element: <DefaultLayout children={<Home />} />,
+  },
+  {
+    path: "/dashboard",
+    element: <DefaultLayout children={<Dashboard />} />,
   },
   {
     path: "*",
-    element: <NotFound />, 
+    element: <h1>Not found</h1>,
   },
 ]);
 
 export function AppRoutes() {
   return <RouterProvider router={router} />;
 }
-
