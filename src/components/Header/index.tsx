@@ -11,19 +11,23 @@ import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
+import { Link, useLocation } from "react-router-dom";
+import { useAppSelector } from "../../store/hooks";
+import { themeColors } from "../../config/global/themeColors";
 
-const pages = ["Home", "Blog", "Contact"];
-const settings = ["Profile", "Account", "Logout"];
-
-const themeColors = {
-  primary: "#8BAA80", // Verde orgânico suave
-  secondary: "#F4EBD0", // Bege claro
-  accent: "#D4A373", // Tom de marrom terracota
-  background: "#F7F6F2", // Off-white quente
-  text: "#3E3E3E", // Cinza escuro para texto
-};
+const pages = [
+  { label: "Home", to: "/" },
+  { label: "Blog", to: "/blog" },
+];
+const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 export function Header() {
+
+  const { pathname } = useLocation();
+
+  const counterRedux = useAppSelector((st) => st.counter);
+
+
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
@@ -43,31 +47,45 @@ export function Header() {
     setAnchorElUser(null);
   };
 
+
   return (
     <AppBar
-      position="static"
+      position="fixed"
       sx={{ backgroundColor: themeColors.background, color: themeColors.text }}
       elevation={0}
     >
       <Container maxWidth="lg">
+
         <Toolbar
           disableGutters
-          sx={{
-            minHeight: 300, // Aumenta a altura da AppBar
-          }}
-        >
-          {/* Mobile Menu Icon */}
-          <Box sx={{ display: { xs: "flex", md: "none" }, mr: 2 }}>
+          sx={{ minHeight: 300 }}>
+          
+          <Avatar
+            alt="Logo"
+            src="/src/assets/icone.webp" 
+            sx={{ width: 60, height: 60, mr: 1, bgcolor: themeColors.accent }}/>
+          
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{ flexGrow: 1, display: "flex", alignItems: "center", color: themeColors.primary }}>
+            {counterRedux.value}
+            Heinen <Typography variant="caption"></Typography>
+          </Typography>    
+          
+          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" }, mr: 2 }}>
+
             <IconButton
               size="large"
               aria-label="menu"
               aria-controls="menu-appbar"
               aria-haspopup="true"
               onClick={handleOpenNavMenu}
-              sx={{ color: themeColors.text }}
-            >
+              sx={{ color: themeColors.text }}>
               <MenuIcon />
             </IconButton>
+
             <Menu
               id="menu-appbar"
               anchorEl={anchorElNav}
@@ -76,38 +94,47 @@ export function Header() {
               transformOrigin={{ vertical: "top", horizontal: "left" }}
               open={Boolean(anchorElNav)}
               onClose={handleCloseNavMenu}
+              sx={{ display: { xs: "block", md: "none" } }}
             >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center" sx={{ color: themeColors.text }}>
-                    {page}
-                  </Typography>
+
+                {pages.map((page) => (
+                <MenuItem key={page.to} onClick={handleCloseNavMenu}>
+                  <Link to={page.to} style={{ textAlign: "center" }}>
+                    {page.label}
+                  </Link>
                 </MenuItem>
               ))}
             </Menu>
           </Box>
 
-          {/* Logo */}
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ flexGrow: 1, display: "flex", alignItems: "center", color: themeColors.primary }}
-          >
-            <Avatar
-              alt="Logo"
-              src="/src/assets/icone.webp" // Caminho para o novo ícone
-              sx={{ width: 60, height: 60, mr: 1, bgcolor: themeColors.accent }}
-            />
-            Heinen <Typography variant="caption"></Typography>
+          <Typography variant="h6" sx={{ mr: 2 }}>
+            {counterRedux.value}
           </Typography>
 
-          {/* Search Icon */}
+          <Box
+            sx={{ flexGrow: 1, display: { xs: "none", md: "flex" }, gap: 2 }}
+          >
+            {pages.map((page) => (
+              <Link
+                key={page.to}
+                to={page.to}
+                onClick={handleCloseNavMenu}
+                style={{
+                  margin: "2px 0",
+                  display: "block",
+                  color: pathname === page.to ? "black" : "white",
+                }}
+              >
+                {page.label}
+              </Link>
+            ))}
+          </Box>
+
+
           <IconButton size="large" sx={{ color: themeColors.text }}>
             <SearchIcon />
           </IconButton>
 
-          {/* User Menu */}
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -138,3 +165,5 @@ export function Header() {
     </AppBar>
   );
 }
+
+
